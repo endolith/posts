@@ -7,7 +7,7 @@ def compute_hue(z):
     H = np.angle(z) / (2*np.pi) + 1
     return np.mod(H, 1)
     
-def eval_func_on_grid(f, re, im,  N): 
+def eval_func_on_grid(f, re, im,  N):
     """Evaluates the complex function at the nodes of the grid defined by re, im and N.
     re and im are  tuples: re=(a,b) and im=(c,d) defining the rectangular region
     N is the number of nodes per unit interval."""
@@ -19,8 +19,7 @@ def eval_func_on_grid(f, re, im,  N):
     y = np.linspace(im[0], im[1], resH)
     x, y = np.meshgrid(x,y)
     z = x + 1j*y
-    w = f(z)
-    return w
+    return f(z)
     
 def classical_domaincol(w, s):
     """Implements classical domain coloring on w, complex array of values of f(z)
@@ -28,22 +27,21 @@ def classical_domaincol(w, s):
     
     indi = np.where(np.isinf(w))#detects the values w=a+ib, with a or b or both =infinity
     indn = np.where(np.isnan(w))#detects nans
-  
+
     H = compute_hue(w)
     S = s*np.ones_like(H)
     modul = np.absolute(w)
     V= (1.0-1.0/(1+modul**2))**0.2
     # the points mapped to infinity are colored with white; hsv_to_rgb(0,0,1)=(1,1,1)=white
-    H[indi]=0.0 
-    S[indi]=0.0  
+    H[indi]=0.0
+    S[indi]=0.0
     V[indi]=1.0
     #hsv_to_rgb(0,0,0.5)=(0.5,0.5, 0.5)=gray  
     H[indn]=0
     S[indn]=0
     V[indn]=0.5
     HSV = np.dstack((H,S,V))
-    RGB = hsv_to_rgb(HSV)
-    return RGB      
+    return hsv_to_rgb(HSV)      
     
     
 def plot_domain(color_func, f,   re=[-1,1], im= [-1,1], Title='',
@@ -62,7 +60,7 @@ def plot_domain(color_func, f,   re=[-1,1], im= [-1,1], Title='',
         ax.imshow(domc, origin="lower")
         ax.axis('off')
         
-def modulus_domaincol(w, s): 
+def modulus_domaincol(w, s):
     """Domain coloring with modulus track.
     w the array of values
     s is the constant Saturation"""
@@ -77,8 +75,7 @@ def modulus_domaincol(w, s):
     S = s*np.ones_like(H, float)
 
     HSV = np.dstack((H,S,V**0.2))# V**0.2>V for V in[0,1];this choice  avoids too dark colors
-    RGB=hsv_to_rgb(HSV) 
-    return RGB
+    return hsv_to_rgb(HSV)
     
     
 def perfract(x, t, m, M):
@@ -87,20 +84,18 @@ def perfract(x, t, m, M):
     return m+(M-m)*(x-np.floor(x))
     
 def contour_domaincol(w,s):
-    H=compute_hue(w) 
+    H=compute_hue(w)
     m=0.7 # brightness is restricted to [0.7,1]; interval suggested by E Wegert
     M=1
     n=15 # n=number of isochromatic lines per cycle 
     isol=perfract(H, 1.0/n, m, M) # isochromatic lines
     modul=np.absolute(w)
     Logm=np.log(modul)
-    Logm=np.nan_to_num(Logm) 
+    Logm=np.nan_to_num(Logm)
     modc=perfract(Logm, 2*np.pi/n, m, M)# lines of constant log-modulus
-   
-    V=modc*isol 
-    S = 0.9*np.ones_like(H, float) 
+
+    V=modc*isol
+    S = 0.9*np.ones_like(H, float)
     HSV = np.dstack((H,S,V))
-    RGB = hsv_to_rgb(HSV)
-   
-    return RGB
+    return hsv_to_rgb(HSV)
     
